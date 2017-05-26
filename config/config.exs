@@ -28,3 +28,4 @@ use Mix.Config
 # here (which is why it is important to import them last).
 #
 #     import_config "#{Mix.env}.exs"
+config :slack, api_token: "xoxb-188440640803-4BY20SzzVG0JBNjxKXIgZHdI"

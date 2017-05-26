@@ -1,4 +1,6 @@
 defmodule Kemisten do
+  use Application
+
   @moduledoc """
   Documentation for Kemisten.
   """
@@ -14,5 +16,9 @@ defmodule Kemisten do
   """
   def hello do
     :world
+  end
+
+  def start(_type, _args) do
+    Kemisten.Supervisor.start_link
   end
 end

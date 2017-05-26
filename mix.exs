@@ -15,7 +15,8 @@ defmodule Kemisten.Mixfile do
   # Type "mix help compile.app" for more information
   def application do
     # Specify extra applications you'll use from Erlang/Elixir
-    [ extra_applications: [
+    [ mod: { Kemisten, [] },
+      extra_applications: [
         :logger, :slack
       ]
     ]
@@ -31,6 +32,9 @@ defmodule Kemisten.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    [ { :slack, "~> 0.11.0" } ]
+    [
+      { :websocket_client, git: "git@github.com:simpers/websocket_client.git", tag: "0.11.1", override: true },
+      { :slack, "~> 0.11.0" }
+    ]
   end
 end

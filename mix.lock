@@ -9,4 +9,4 @@
   "slack": {:hex, :slack, "0.11.0", "9353db9fe2ad9de2222862361869f214dfc8d2dfb793d056fdfbf3c43ce9a244", [:mix], [{:exjsx, "~> 3.2.0", [hex: :exjsx, repo: "hexpm", optional: false]}, {:httpoison, "~> 0.11", [hex: :httpoison, repo: "hexpm", optional: false]}, {:websocket_client, "~> 1.1.0", [hex: :websocket_client, repo: "hexpm", optional: false]}], "hexpm"},
   "ssl_verify_fun": {:hex, :ssl_verify_fun, "1.1.1", "28a4d65b7f59893bc2c7de786dec1e1555bd742d336043fe644ae956c3497fbe", [:make, :rebar], [], "hexpm"},
   "unicode_util_compat": {:hex, :unicode_util_compat, "0.1.0", "f554c539c826eac8bcf101d2dbcc4a798ba8a960a176ca58d0b2f225c265b174", [:rebar3], [], "hexpm"},
-  "websocket_client": {:hex, :websocket_client, "1.1.0", "c1ac9162a2286d3ca747417b1717090e762becba1f9f0bde359cb0318b066636", [:rebar3], [], "hexpm"}}
+  "websocket_client": {:git, "git@github.com:simpers/websocket_client.git", "9446a07e20d10daebfbac50b99b20fd8b37b5e1b", [tag: "0.11.1"]}}
