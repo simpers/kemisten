@@ -8,8 +8,10 @@ defmodule Kemisten.Supervisor do
   end
 
   def init(:ok) do
+    token = Application.get_env(:kemisten, :slack_token)
+    IO.inspect token
     children = [
-      worker(Bot, [SlackKemisten, [], "xoxb-188440640803-4BY20SzzVG0JBNjxKXIgZHdI"], restart: :permanent)
+      worker(Bot, [SlackKemisten, [], token], restart: :permanent)
     ]
     supervise(children, strategy: :one_for_one);
   end
