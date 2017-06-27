@@ -8,10 +8,10 @@ defmodule Kemisten.Slack.Supervisor do
     case Process.whereis(name) do
       pid when is_pid(pid) -> pid
       nil ->
-        bot_params = [RtmBot, [], token, %{name: name}]
+        bot_params = [ Kemisten.Slack.Handler, [], token, %{ name: name } ]
         case Supervisor.start_child(options[:name], bot_params) do
-          {:ok, pid} -> pid
-          {:error, {:EXIT, {{:badkey, _, err}, _}}} ->
+          { :ok, pid } -> pid
+          { :error, { :EXIT, { {:badkey, _, err}, _} } } ->
             IO.puts "Failed to start child:"
             IO.inspect err
             err # complex error structure from the Slack.Bot failures
