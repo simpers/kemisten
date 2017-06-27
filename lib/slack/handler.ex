@@ -1,4 +1,4 @@
-defmodule SlackKemisten do
+defmodule Kemisten.Slack.Handler do
   use Slack
 
   def handle_connect(slack, state) do
