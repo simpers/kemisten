@@ -33,8 +33,8 @@ defmodule Kemisten.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      { :websocket_client, git: "https://github.com/simpers/websocket_client.git", tag: "0.11.1", override: true },
-      { :slack, "~> 0.11.0" }
+      # { :websocket_client, git: "https://github.com/simpers/websocket_client.git", tag: "1.1.0", override: true },
+      { :slack, "~> 0.12.0" }
     ]
   end
 end
