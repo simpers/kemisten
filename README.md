@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/menuan/kemisten.svg?branch=master)](https://travis-ci.org/menuan/kemisten)
+
 # Kemisten
 
 **TODO: Add description**
