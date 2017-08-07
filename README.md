@@ -1,4 +1,7 @@
-[![Build Status](https://travis-ci.org/menuan/kemisten.svg?branch=master)](https://travis-ci.org/menuan/kemisten)
+
+# Tracis CI
+
+*Master:* [![Build Status](https://travis-ci.org/menuan/kemisten.svg?branch=master)](https://travis-ci.org/menuan/kemisten)
 
 # Kemisten
 
