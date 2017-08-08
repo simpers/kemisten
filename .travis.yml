@@ -1,7 +1,8 @@
 language: elixir
 elixir:
-  - 1.5.0
+- 1.5.0
 otp_release:
-  - 20.0.1
+- 20.0.1
 notifications:
-  slack: menuan:Wk7Fg3mKgSdTebcGgEPXAZ40
+  slack:
+    secure: lpyM5LsveDoFahJ99xVfRj2oHM8YmMAg/Fn9MVX+h4wzWWxP0FLmACDdd8TCGNtw2cww7UDSMHq9ggsqJveM7C4z5Q1GhpJ2EjYzZtqqnmWWvCKaj4x5vTyF4ChE9ymw/xn+QFNYL5l5WY8U621pOjCbaBRkkhBcrlIblPUqKIjGMog7vlrylJQos2bDslhVxZQN1gT6SW10peJao+OuhiU2G/Xy3cErI3VdastYZ2zE7dwmxFBnupEIuBsCHxvaBrngG3NGlfIdtmssTgJTtD4i+Ro/J4aRB5M9C3E09cS7R2lpaRl7PX/+bAeK3uH51qWXg4/9YVc57WTyk0v0XdT60QSBOTrLeHHm98CLNt2hcr1bPRjcav8qY93zblHRwb+J2c2L5kcGQRfR39lXp19SvdwBY08IC3MkkbGXPaI6+xpbpLldR+529XhUCKiz7MAEnwo65SEsLSYHSO5/yz9W/QOUPcobkOjWAITBUP/t+0Rk5fRD2VW8ZV0H7n0gR5aExABTUVZ0qCO+jEDFT5lz2o1kRT07N2xRbfmkh8Kcsogyt/ow2HHCG/765Os7dV9uZc+jrjxMNiRB3Deld4WbaCpp/mBdXvHM4hoTnIKjX3doBgrfFK5rEnXybgY7tWTqjYXzb4HEz8ZLllwd7qcfmvfuX3A6ouzpoMF6Vkg=
