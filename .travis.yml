@@ -3,3 +3,5 @@ elixir:
   - 1.5.0
 otp_release:
   - 20.0.1
+notifications:
+  slack: menuan:Wk7Fg3mKgSdTebcGgEPXAZ40
