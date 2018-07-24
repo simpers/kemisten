@@ -96,11 +96,11 @@ defmodule Kemisten.Slack.Handler do
   end
   defp handle_message(message = %{ text: "ping " <> user }, slack, state) do
     Logger.info "Start pinging user #{user}"
-    
     setup_pinging(get_user_id(user), state, slack)
   end
-  defp handle_message(message = %{ text: "ping", user: user_id }, slack, state) do
-    send_message("pong", user_id, slack)
+  defp handle_message(message = %{ text: "ping", user: user_id, channel: channel }, slack, state) do
+    Logger.info "Got a ping, will respond with a pong"
+    send_message("pong", channel, slack)
     { :ok, state }
   end
   defp handle_message(message = %{ text: "stop pinging " <> user}, slack, state) do
