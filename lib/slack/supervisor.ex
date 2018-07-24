@@ -8,7 +8,7 @@ defmodule Kemisten.Slack.Supervisor do
     case Process.whereis(name) do
       pid when is_pid(pid) -> pid
       nil ->
-        bot_params = [ Kemisten.Slack.Handler, [], token, %{ name: name } ]
+        bot_params = [ Kemisten.Slack.Handler, %{}, token, %{ name: name } ]
         case Supervisor.start_child(options[:name], bot_params) do
           { :ok, pid } -> pid
           { :error, { :EXIT, { {:badkey, _, err}, _} } } ->

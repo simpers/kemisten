@@ -34,7 +34,9 @@ defmodule Kemisten.Mixfile do
   defp deps do
     [
       # { :websocket_client, git: "https://github.com/simpers/websocket_client.git", tag: "1.1.0", override: true },
-      { :slack, "~> 0.12.0" }
+      { :slack, "~> 0.14" },
+      { :distillery, "~> 1.5.3" },
+      { :edeliver, "~> 1.5" }
     ]
   end
 end
