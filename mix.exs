@@ -15,7 +15,7 @@ defmodule Kemisten.Mixfile do
   # Type "mix help compile.app" for more information
   def application do
     # Specify extra applications you'll use from Erlang/Elixir
-    [ mod: { Kemisten, [] },
+    [ mod: { Kemisten.Application, [] },
       extra_applications: [
         :logger, :slack
       ]

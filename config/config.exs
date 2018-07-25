@@ -8,6 +8,9 @@ use Mix.Config
 # if you want to provide default values for your application for
 # 3rd-party users, it should be done in your "mix.exs" file.
 
+config :kemisten,
+  slack_token: System.get_env("SLACK_TOKEN")
+
 # You can configure for your application as:
 #
 #     config :kemisten, key: :value
@@ -28,6 +31,3 @@ use Mix.Config
 # here (which is why it is important to import them last).
 #
 #     import_config "#{Mix.env}.exs"
-config :kemisten, slack_token: System.get_env("SLACK_TOKEN")
-
-config :slack, api_token: ""
