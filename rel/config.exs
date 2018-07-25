@@ -13,8 +13,6 @@ environment :prod do
   set include_erts: true
   set include_system_libs: true
   set cookie: :kemisten_prodster
-
-  set pre_start_hook: "rel/hooks/post_start"
 end
 
 release :kemisten do
