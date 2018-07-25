@@ -2,6 +2,9 @@ defmodule Kemisten.Slack.Handler do
   use Slack
   require Logger
 
+  alias Kemisten.Pinger
+  alias Kemisten.Utils
+
   #
   # Callbacks:
   #
@@ -10,7 +13,7 @@ defmodule Kemisten.Slack.Handler do
   @ping_me "ping <@#{@me}>"
 
   def handle_connect(slack, state) do
-    IO.puts "Connected as #{slack.me.name}"
+    Logger.info "Connected as #{slack.me.name}"
     { :ok, Map.put(state, :pinging, %{ }) }
   end
 
@@ -28,7 +31,7 @@ defmodule Kemisten.Slack.Handler do
     text = String.trim_trailing(text)
     message = Map.put(message, :text, text)
     Logger.debug "Received message: \"#{text}\" from #{from}"
-    handle_message(message, slack, state)    
+    handle_message(message, slack, state)
   end
   def handle_event(%{ type: "error", error: %{ code: code, msg: msg } }, _, state) do
     Logger.error "Error #{code}: #{msg}"
@@ -37,7 +40,7 @@ defmodule Kemisten.Slack.Handler do
     Logger.debug "Received event of type #{type}"
     { :ok, state }
   end
-  
+
   def handle_info({ :message, text, channel }, slack, state) do
     IO.puts "Sending your message, Captain!"
     send_message(text, channel, slack)
@@ -52,7 +55,7 @@ defmodule Kemisten.Slack.Handler do
   def ping_user(user, slack) do
     send_message("ping", user, slack)
   end
-  
+
   defp setup_pinging(user_id, state, slack) do
     { :ok, timer_ref } = :timer.apply_interval(5000, __MODULE__, :ping_user, [user_id, slack]) # :timer.send_interval(5000, { :ping, user })
     new_state = Kernel.put_in(state, [:pinging, user_id], timer_ref)
@@ -85,7 +88,8 @@ defmodule Kemisten.Slack.Handler do
 
   defp handle_message(message = %{ text: "pong", user: user_id }, slack, state) do
     Logger.info "Got pong from user #{user_id}"
-    handle_pong(user_id, state, slack)
+    # handle_pong(user_id, state, slack)
+    Pinger.pong_response(user_id, state, slack)
   end
   defp handle_message(message = %{ text: @ping_me }, slack, state) do
     Logger.info "Some cheeky bastard tried to make me ping myself!"
@@ -93,18 +97,19 @@ defmodule Kemisten.Slack.Handler do
   end
   defp handle_message(message = %{ text: "ping " <> user }, slack, state) do
     Logger.info "Start pinging user #{user}"
-    setup_pinging(get_user_id(user), state, slack)
+    Pinger.setup_pinger(Utils.extract_user_id(user), state, slack)
   end
   defp handle_message(message = %{ text: "ping", user: user_id, channel: channel }, slack, state) do
     Logger.info "Got a ping, will respond with a pong"
-    send_message("pong", channel, slack)
+    Pinger.ping_response(channel, slack)
     { :ok, state }
   end
   defp handle_message(message = %{ text: "stop pinging " <> user}, slack, state) do
     Logger.info "Stop pinging user #{user}"
     regex = ~r/<@(?<id>[A-Z0-9]{9})>/u
     user_id = Regex.named_captures(regex, user)["id"]
-    cancel_pinging(user_id, state)
+    # cancel_pinging(user_id, state)
+    Pinger.stop_pinger(user_id, state)
   end
   defp handle_message(message = %{ text: "Greetings" }, slack, state), do: greeting(message, slack, state)
   defp handle_message(message = %{ text: "name" }, slack, state), do: generate_name_for_slack(message, slack, state)
@@ -127,7 +132,7 @@ defmodule Kemisten.Slack.Handler do
     send_message(msg, message.channel, slack)
     { :ok, state }
   end
-  
+
   defp generate_name_for_slack(message, slack, state) do
     user = slack.users[message.user]
     Logger.debug "User #{user.name} requested a new name!"
@@ -139,7 +144,7 @@ defmodule Kemisten.Slack.Handler do
   end
 
   defp generate_name(), do: Enum.random([ "Kekler", "Keckler", "Keckan", "Kecka", "Kucka" ])
-  
+
   defp greeting(message, slack, state) do
     user = slack.users[message.user]
     Logger.debug "User #{} sent message: Greetings"
@@ -148,7 +153,7 @@ defmodule Kemisten.Slack.Handler do
     send_message(msg, message.channel, slack)
     { :ok, state }
   end
-  
+
   defp print_state(slack, state) do
     Logger.debug "Slack variable:"
     Logger.debug slack
@@ -159,10 +164,5 @@ defmodule Kemisten.Slack.Handler do
     formatted = "<@#{id}|#{mention_alias}>"
     Logger.debug "format_mention: #{formatted}"
     formatted
-  end
-
-  defp get_user_id(user) do
-    regex = ~r/<@(?<id>[A-Z0-9]{9})>/u
-    Regex.named_captures(regex, user)["id"]
   end
 end
