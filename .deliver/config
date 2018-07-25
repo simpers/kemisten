@@ -1,0 +1,28 @@
+APP="kemisten"
+
+BUILD_HOST="localhost"
+BUILD_USER="elixir"
+BUILD_AT="/tmp/edeliver/$APP/builds"
+
+# RELEASE_DIR="/tmp/edeliver/$APP/builds/_build/prod/rel/$APP"
+
+# prevent re-installing node modules; this defaults to "."
+GIT_CLEAN_PATHS="_build rel priv/static"
+
+# STAGING_HOSTS="188.166.182.170"
+# STAGING_USER="deploy"
+# TEST_AT="/home/deploy/staging"
+
+PRODUCTION_HOSTS="localhost"
+PRODUCTION_USER="${BUILD_USER}"
+DELIVER_TO="/home/${PRODUCTION_USER}"
+
+# For *Phoenix* projects, symlink prod.secret.exs to our tmp source
+pre_erlang_get_and_update_deps() {
+  local _prod_secret_path="/home/elixir/${APP}/prod.secret.exs"
+  if [ "$TARGET_MIX_ENV" = "prod" ]; then
+    __sync_remote "
+      ln -sfn '$_prod_secret_path' '$BUILD_AT/config/prod.secret.exs'
+    "
+  fi
+}
