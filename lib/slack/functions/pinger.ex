@@ -1,8 +1,9 @@
 defmodule Kemisten.Pinger do
   require Logger
-  
+
   alias Slack.Sends
 
+  alias Kemisten.Sassy
   alias Kemisten.Utils
 
   def ping_response(channel, slack), do: Sends.send_message("pong", channel, slack)
@@ -39,4 +40,7 @@ defmodule Kemisten.Pinger do
   def ping_channel(channel, slack) do
     Sends.send_message("ping", channel, slack)
   end
+
+  def handle_cheeky(channel, channel, user), do: send(self(), { :message, "", channel })
+  def handle_cheeky(channel, _user_id, user), do: send(self(), { :message, Sassy.get_sass(user), channel })
 end

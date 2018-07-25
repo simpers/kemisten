@@ -43,7 +43,7 @@ defmodule Kemisten.Slack.Handler do
   end
 
   def handle_info({ :message, text, channel }, slack, state) do
-    IO.puts "Sending your message, Captain!"
+    Logger.info "Sending message #{text} to channel #{channel}"
     send_message(text, channel, slack)
     { :ok, state }
   end
@@ -58,8 +58,9 @@ defmodule Kemisten.Slack.Handler do
     # handle_pong(user_id, state, slack)
     Pinger.pong_response(user_id, state, slack)
   end
-  defp handle_message(_message = %{ text: @ping_me }, _slack, state) do
+  defp handle_message(_message = %{ text: @ping_me, user: user, channel: channel }, _slack, state) do
     Logger.info "Some cheeky bastard tried to make me ping myself!"
+    Pinger.handle_cheeky(channel, Utils.extract_user_id(user), user)
     { :ok, state }
   end
   defp handle_message(_message = %{ text: "ping " <> user }, slack, state) do
