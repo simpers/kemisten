@@ -17,7 +17,7 @@ defmodule Kemisten.Slack.Handler do
     { :ok, Map.put(state, :pinging, %{ }) }
   end
 
-  def handle_event(%{ type: "message", user: "U5JCYJUPM" } = message, slack, state) do
+  def handle_event(_message = %{ type: "message", user: "U5JCYJUPM" }, _slack, state) do
     Logger.debug "Received my own message."
     { :ok, state }
   end
@@ -33,8 +33,9 @@ defmodule Kemisten.Slack.Handler do
     Logger.debug "Received message: \"#{text}\" from #{from}"
     handle_message(message, slack, state)
   end
-  def handle_event(%{ type: "error", error: %{ code: code, msg: msg } }, _, state) do
+  def handle_event(%{ type: "error", error: %{ code: code, msg: msg } }, _slack, state) do
     Logger.error "Error #{code}: #{msg}"
+    { :ok, state }
   end
   def handle_event(%{ type: type }, _, state) do
     Logger.debug "Received event of type #{type}"
@@ -52,64 +53,27 @@ defmodule Kemisten.Slack.Handler do
   # Internal functions
   #
 
-  def ping_user(user, slack) do
-    send_message("ping", user, slack)
-  end
-
-  defp setup_pinging(user_id, state, slack) do
-    { :ok, timer_ref } = :timer.apply_interval(5000, __MODULE__, :ping_user, [user_id, slack]) # :timer.send_interval(5000, { :ping, user })
-    new_state = Kernel.put_in(state, [:pinging, user_id], timer_ref)
-    { :ok, new_state }
-  end
-
-  defp cancel_pinging(user_id, state) do
-    case Kernel.pop_in(state[:pinging][user_id]) do
-      { nil, state } ->
-        Logger.debug "User #{user_id} not found in active pings."
-        { :ok, state }
-      { timer_ref, new_state } ->
-        Logger.info "Stopped pinging user #{user_id}"
-        { :ok, :cancel } = :timer.cancel(timer_ref)
-        { :ok, new_state }
-    end
-  end
-
-  defp handle_pong(user_id, state, slack) do
-    case Kernel.pop_in(state[:pinging][user_id]) do
-      { nil, state } ->
-        Logger.debug "Was not pinging user #{user_id}."
-        { :ok, state }
-      { timer_ref, new_state } ->
-        { :ok, :cancel } = :timer.cancel(timer_ref)
-        send_message(":)", user_id, slack)
-        { :ok, new_state }
-    end
-  end
-
-  defp handle_message(message = %{ text: "pong", user: user_id }, slack, state) do
+  defp handle_message(_message = %{ text: "pong", user: user_id }, slack, state) do
     Logger.info "Got pong from user #{user_id}"
     # handle_pong(user_id, state, slack)
     Pinger.pong_response(user_id, state, slack)
   end
-  defp handle_message(message = %{ text: @ping_me }, slack, state) do
+  defp handle_message(_message = %{ text: @ping_me }, _slack, state) do
     Logger.info "Some cheeky bastard tried to make me ping myself!"
     { :ok, state }
   end
-  defp handle_message(message = %{ text: "ping " <> user }, slack, state) do
+  defp handle_message(_message = %{ text: "ping " <> user }, slack, state) do
     Logger.info "Start pinging user #{user}"
     Pinger.setup_pinger(Utils.extract_user_id(user), state, slack)
   end
-  defp handle_message(message = %{ text: "ping", user: user_id, channel: channel }, slack, state) do
+  defp handle_message(_message = %{ text: "ping", channel: channel }, slack, state) do
     Logger.info "Got a ping, will respond with a pong"
     Pinger.ping_response(channel, slack)
     { :ok, state }
   end
-  defp handle_message(message = %{ text: "stop pinging " <> user}, slack, state) do
+  defp handle_message(_message = %{ text: "stop pinging " <> user}, _slack, state) do
     Logger.info "Stop pinging user #{user}"
-    regex = ~r/<@(?<id>[A-Z0-9]{9})>/u
-    user_id = Regex.named_captures(regex, user)["id"]
-    # cancel_pinging(user_id, state)
-    Pinger.stop_pinger(user_id, state)
+    Pinger.stop_pinger(Utils.extract_user_id(user), state)
   end
   defp handle_message(message = %{ text: "Greetings" }, slack, state), do: greeting(message, slack, state)
   defp handle_message(message = %{ text: "name" }, slack, state), do: generate_name_for_slack(message, slack, state)
@@ -155,12 +119,12 @@ defmodule Kemisten.Slack.Handler do
   end
 
   defp print_state(slack, state) do
-    Logger.debug "Slack variable:"
-    Logger.debug slack
-    {:ok, state}
+    Logger.debug "Slack state variable:"
+    IO.inspect slack
+    { :ok, state }
   end
 
-  defp format_mention(%{ id: id, alias: mention_alias } = user) do
+  defp format_mention(_user = %{ id: id, alias: mention_alias }) do
     formatted = "<@#{id}|#{mention_alias}>"
     Logger.debug "format_mention: #{formatted}"
     formatted
