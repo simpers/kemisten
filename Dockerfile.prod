@@ -1,17 +1,18 @@
 FROM alpine:edge
 
 ENV APP_NAME="kemisten"
-ENV VERSION="0.1.0"
 ENV WORK_DIR="/home/elixir/kemisten"
 
 RUN apk --no-cache add musl bash libressl2.7-libcrypto
 RUN addgroup -S elixir && adduser -S elixir -G elixir
 
-# COPY _build/prod/rel/tol ${WORK_DIR}
+
+ARG VERSION="0.1.0"
 ADD .deliver/releases/${APP_NAME}_${VERSION}.release.tar.gz ${WORK_DIR}
 WORKDIR ${WORK_DIR}
 RUN chown -R elixir:elixir ${WORK_DIR}
 
 USER elixir
+COPY entrypoint.sh /home/elixir/
 
-ENTRYPOINT ["/home/elixir/kemisten/bin/kemisten", "foreground"]
+ENTRYPOINT ["/home/elixir/entrypoint.sh"]

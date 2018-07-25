@@ -18,5 +18,6 @@ end
 release :kemisten do
   set version: current_version(:kemisten)
   set applications: [
+    :poison
   ]
 end

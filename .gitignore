@@ -20,3 +20,4 @@ erl_crash.dump
 *.ez
 .env
 config/prod.secret.exs
+.deliver/releases
