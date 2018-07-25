@@ -7,7 +7,7 @@ defmodule Kemisten.Application do
 
     Logger.info "Starting application #{__MODULE__}"
 
-    case Application.get_env(:slacker, :slack_token) do
+    case Application.get_env(:kemisten, :slack_token) do
       nil ->
         { :error, "No API token found." }
       token ->
