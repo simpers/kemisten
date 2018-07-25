@@ -7,6 +7,7 @@ defmodule Kemisten.Mixfile do
       elixir: "~> 1.4",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
+      aliases: aliases(),
       deps: deps() ]
   end
 
@@ -39,4 +40,6 @@ defmodule Kemisten.Mixfile do
       { :edeliver, "~> 1.5" }
     ]
   end
+
+  defp aliases(), do: [ "test": [ "test --no-start" ] ]
 end
