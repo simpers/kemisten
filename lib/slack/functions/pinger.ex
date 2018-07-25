@@ -41,6 +41,6 @@ defmodule Kemisten.Pinger do
     Sends.send_message("ping", channel, slack)
   end
 
-  def handle_cheeky(channel, channel, user), do: send(self(), { :message, "", channel })
-  def handle_cheeky(channel, _user_id, user), do: send(self(), { :message, Sassy.get_sass(user), channel })
+  def handle_cheeky(channel, true, user), do: send(self(), { :message, Sassy.get_sass(nil), channel })
+  def handle_cheeky(channel, false, user), do: send(self(), { :message, Sassy.get_sass(user), channel })
 end

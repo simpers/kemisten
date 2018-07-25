@@ -26,12 +26,17 @@ defmodule Kemisten.Slack.Handler do
   #   Logger.info "Setting up a ping at user #{user}"
   #   { :ok, state } # setup_pinging(user, state, slack) }
   # end
-  def handle_event(%{ type: "message", text: "IO.state" }, slack, state), do: print_state(slack, state)
+  def handle_event(%{ type: "message", text: "IO.state" }, slack, state) do
+    Utils.print_state(slack, nil)
+    { :ok, state }
+  end
+  def handle_event(%{ type: "message", text: "IO.state " <> key }, slack, state) do
+    Utils.print_state(slack, key)
+    { :ok, state }
+  end
   def handle_event(message = %{ type: "message", text: text, user: from }, slack, state) do
-    text = String.trim_trailing(text)
-    message = Map.put(message, :text, text)
     Logger.debug "Received message: \"#{text}\" from #{from}"
-    handle_message(message, slack, state)
+    handle_message(Map.put(message, :text, String.trim_trailing(text)), slack, state)
   end
   def handle_event(%{ type: "error", error: %{ code: code, msg: msg } }, _slack, state) do
     Logger.error "Error #{code}: #{msg}"
@@ -58,9 +63,9 @@ defmodule Kemisten.Slack.Handler do
     # handle_pong(user_id, state, slack)
     Pinger.pong_response(user_id, state, slack)
   end
-  defp handle_message(_message = %{ text: @ping_me, user: user, channel: channel }, _slack, state) do
-    Logger.info "Some cheeky bastard tried to make me ping myself!"
-    Pinger.handle_cheeky(channel, Utils.extract_user_id(user), user)
+  defp handle_message(_message = %{ text: @ping_me, user: user, channel: channel }, slack, state) do
+    Logger.info "Cheeky bastard #{user} tried to make me ping myself!"
+    Pinger.handle_cheeky(channel, Utils.check_if_im_channel_with_user(slack, channel, user), Utils.format_mention(user))
     { :ok, state }
   end
   defp handle_message(_message = %{ text: "ping " <> user }, slack, state) do
@@ -103,7 +108,7 @@ defmodule Kemisten.Slack.Handler do
     Logger.debug "User #{user.name} requested a new name!"
     name = generate_name()
     format_args = %{ id: user.id, alias: user.name }
-    msg = "Hello, #{format_mention(format_args)}, your new name is #{name}"
+    msg = "Hello, #{Utils.format_mention(format_args)}, your new name is #{name}"
     send_message(msg, message.channel, slack)
     { :ok, state }
   end
@@ -114,20 +119,8 @@ defmodule Kemisten.Slack.Handler do
     user = slack.users[message.user]
     Logger.debug "User #{} sent message: Greetings"
     args = %{ id: user.id, alias: user.name }
-    msg = "Hello, #{format_mention( args )}! How can I be of service?"
+    msg = "Hello, #{Utils.format_mention( args )}! How can I be of service?"
     send_message(msg, message.channel, slack)
     { :ok, state }
-  end
-
-  defp print_state(slack, state) do
-    Logger.debug "Slack state variable:"
-    IO.inspect slack
-    { :ok, state }
-  end
-
-  defp format_mention(_user = %{ id: id, alias: mention_alias }) do
-    formatted = "<@#{id}|#{mention_alias}>"
-    Logger.debug "format_mention: #{formatted}"
-    formatted
   end
 end
