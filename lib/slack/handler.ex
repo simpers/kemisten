@@ -11,10 +11,7 @@ defmodule Kemisten.Slack.Handler do
 
   def handle_connect(slack, state) do
     IO.puts "Connected as #{slack.me.name}"
-    IO.inspect state
-    new_state = Map.put(state, :pinging, %{ })
-    IO.inspect new_state
-    { :ok, new_state }
+    { :ok, Map.put(state, :pinging, %{ }) }
   end
 
   def handle_event(%{ type: "message", user: "U5JCYJUPM" } = message, slack, state) do
