@@ -11,6 +11,6 @@ defmodule Kemisten.Slack.Supervisor do
     children = [
       worker(Slack.Bot, [], restart: :transient)
     ]
-    supervise(children, strategy: :simple_one_for_one);
+    supervise(children, strategy: :one_for_one);
   end
 end
