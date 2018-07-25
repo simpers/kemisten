@@ -6,7 +6,6 @@ defmodule Kemisten.Application do
     import Supervisor.Spec
 
     Logger.info "Starting application #{__MODULE__}"
-
     case Application.get_env(:kemisten, :slack_token) do
       nil ->
         { :error, "No API token found." }
@@ -20,4 +19,6 @@ defmodule Kemisten.Application do
         Supervisor.start_link(children, opts)
     end
   end
+
+  def config_change(_changed, _new, _removed), do: :ok
 end
