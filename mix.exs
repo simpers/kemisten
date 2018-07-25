@@ -8,7 +8,15 @@ defmodule Kemisten.Mixfile do
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
       aliases: aliases(),
-      deps: deps() ]
+      deps: deps(),
+      test_coverage: [ tool: ExCoveralls ],
+      preferred_cli_env: [
+        "coveralls": :test,
+        "coveralls.detail": :test,
+        "coveralls.post": :test,
+        "coveralls.html": :test
+      ]
+    ]
   end
 
   # Configuration for the OTP application
@@ -37,7 +45,8 @@ defmodule Kemisten.Mixfile do
       # { :websocket_client, git: "https://github.com/simpers/websocket_client.git", tag: "1.1.0", override: true },
       { :slack, "~> 0.14" },
       { :distillery, "~> 1.5.3" },
-      { :edeliver, "~> 1.5" }
+      { :edeliver, "~> 1.5" },
+      { :excoveralls, "~> 0.8", only: :test }
     ]
   end
 
