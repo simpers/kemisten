@@ -1,4 +1,10 @@
 defmodule Kemisten.Utils do
+
+  def send_message(text, channel) do
+    # send_message(text, channel, slack)
+    send(self(), { :message, text, channel })
+  end
+
   def print_state(slack, nil), do: IO.inspect slack
   def print_state(slack, key) when is_binary(key), do: IO.inspect slack[String.to_existing_atom(key)]
   

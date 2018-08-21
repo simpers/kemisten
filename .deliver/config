@@ -1,6 +1,6 @@
 APP="kemisten"
 
-BUILD_HOST="localhost"
+BUILD_HOST="elixir-imagebuilder"
 BUILD_USER="elixir"
 BUILD_AT="/tmp/edeliver/$APP/builds"
 

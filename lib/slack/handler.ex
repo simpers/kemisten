@@ -50,6 +50,7 @@ defmodule Kemisten.Slack.Handler do
   def handle_info({ :message, text, channel }, slack, state) do
     Logger.info "Sending message #{text} to channel #{channel}"
     send_message(text, channel, slack)
+    # Utils.send_message(text, channel)
     { :ok, state }
   end
   def handle_info(_, _, state), do: { :noreply, state }
@@ -58,9 +59,10 @@ defmodule Kemisten.Slack.Handler do
   # Internal functions
   #
 
+  defp handle_message(message = %{ text: "Pong", user: user_id }, slack, state),
+    do: handle_message(%{ message | text: "pong" }, slack, state)
   defp handle_message(_message = %{ text: "pong", user: user_id }, slack, state) do
     Logger.info "Got pong from user #{user_id}"
-    # handle_pong(user_id, state, slack)
     Pinger.pong_response(user_id, state, slack)
   end
   defp handle_message(_message = %{ text: @ping_me, user: user, channel: channel }, slack, state) do
@@ -68,8 +70,9 @@ defmodule Kemisten.Slack.Handler do
     Pinger.handle_cheeky(channel, Utils.check_if_im_channel_with_user(slack, channel, user), Utils.format_mention(user))
     { :ok, state }
   end
-  defp handle_message(_message = %{ text: "ping " <> user }, slack, state) do
+  defp handle_message(_message = %{ text: "ping " <> user, user: from_user, channel: channel }, slack, state) do
     Logger.info "Start pinging user #{user}"
+    Utils.send_message("Roger that, #{Utils.format_mention(from_user)}!", channel)
     Pinger.setup_pinger(Utils.extract_user_id(user), state, slack)
   end
   defp handle_message(_message = %{ text: "ping", channel: channel }, slack, state) do
@@ -77,8 +80,9 @@ defmodule Kemisten.Slack.Handler do
     Pinger.ping_response(channel, slack)
     { :ok, state }
   end
-  defp handle_message(_message = %{ text: "stop pinging " <> user}, _slack, state) do
+  defp handle_message(_message = %{ text: "stop pinging " <> user, user: from_user, channel: channel}, _slack, state) do
     Logger.info "Stop pinging user #{user}"
+    Utils.send_message("Got it #{Utils.format_mention()}, stopping")
     Pinger.stop_pinger(Utils.extract_user_id(user), state)
   end
   defp handle_message(message = %{ text: "Greetings" }, slack, state), do: greeting(message, slack, state)
@@ -99,7 +103,7 @@ defmodule Kemisten.Slack.Handler do
     Logger.debug "User #{user.name} needs help to find The Google Search.. (:"
     link = "http://lmgtfy.com/?q=#{URI.encode(message.text)}"
     msg = "Hey, since I am so nice, here you go: #{link}"
-    send_message(msg, message.channel, slack)
+    Utils.send_message(msg, message.channel)
     { :ok, state }
   end
 
@@ -109,7 +113,7 @@ defmodule Kemisten.Slack.Handler do
     name = generate_name()
     format_args = %{ id: user.id, alias: user.name }
     msg = "Hello, #{Utils.format_mention(format_args)}, your new name is #{name}"
-    send_message(msg, message.channel, slack)
+    Utils.send_message(msg, message.channel)
     { :ok, state }
   end
 
@@ -120,7 +124,7 @@ defmodule Kemisten.Slack.Handler do
     Logger.debug "User #{} sent message: Greetings"
     args = %{ id: user.id, alias: user.name }
     msg = "Hello, #{Utils.format_mention( args )}! How can I be of service?"
-    send_message(msg, message.channel, slack)
+    Utils.send_message(msg, message.channel)
     { :ok, state }
   end
 end
