@@ -8,8 +8,8 @@ defmodule Kemisten.Pinger do
 
   def ping_response(channel, slack), do: Sends.send_message("pong", channel, slack)
 
-  def setup_pinger(channel, state, slack) do
-    { :ok, timer_ref } = :timer.apply_interval(5000, __MODULE__, :ping_channel, [channel, slack])
+  def setup_pinger(channel, state, slack, interval) when is_integer(interval) do
+    { :ok, timer_ref } = :timer.apply_interval(interval, __MODULE__, :ping_channel, [channel, slack])
     { :ok, Kernel.put_in(state, [:pinging, channel], timer_ref) }
   end
 

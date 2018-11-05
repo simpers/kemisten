@@ -11,6 +11,7 @@ defmodule Kemisten.Application do
         { :error, "No API token found." }
       token ->
         Logger.info "Token present. Starting application."
+        IO.inspect token
         slack_args = [Kemisten.Slack.Handler, %{}, token]
         children = [
           supervisor(Kemisten.Slack.Supervisor, [slack_args])

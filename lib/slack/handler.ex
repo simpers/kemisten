@@ -70,10 +70,11 @@ defmodule Kemisten.Slack.Handler do
     Pinger.handle_cheeky(channel, Utils.check_if_im_channel_with_user(slack, channel, user), Utils.format_mention(user))
     { :ok, state }
   end
-  defp handle_message(_message = %{ text: "ping " <> user, user: from_user, channel: channel }, slack, state) do
+  defp handle_message(_message = %{ text: "ping " <> ping_message, user: from_user, channel: channel }, slack, state) do
+    { :ok, user, interval } = Utils.get_user_and_interval(ping_message)
     Logger.info "Start pinging user #{user}"
     Utils.send_message("Roger that, #{Utils.format_mention(from_user)}!", channel)
-    Pinger.setup_pinger(Utils.extract_user_id(user), state, slack)
+    Pinger.setup_pinger(Utils.extract_user_id(user), state, slack, interval)
   end
   defp handle_message(_message = %{ text: "ping", channel: channel }, slack, state) do
     Logger.info "Got a ping, will respond with a pong"
