@@ -6,17 +6,16 @@ defmodule Kemisten.Application do
     import Supervisor.Spec
 
     Logger.info "Starting application #{__MODULE__}"
-    case Application.get_env(:kemisten, :slack_token) do
+    case Application.get_env(:kemisten, :slack_token_env_name) do
       nil ->
-        { :error, "No API token found." }
-      token ->
-        Logger.info "Token present. Starting application."
-        IO.inspect token
-        slack_args = [Kemisten.Slack.Handler, %{}, token]
+        :error
+      { :env, token_name } ->
+        token = System.get_env(token_name)
+        slack_args = [ Kemisten.Slack.Handler, %{}, token ]
         children = [
-          supervisor(Kemisten.Slack.Supervisor, [slack_args])
+          supervisor(Kemisten.OTP.SlackSupervisor, [ slack_args ])
         ]
-        opts = [strategy: :one_for_one, name: Kemisten.Supervisor]
+        opts = [ strategy: :one_for_one, name: Kemisten.Supervisor ]
         Supervisor.start_link(children, opts)
     end
   end

@@ -4,7 +4,7 @@ defmodule Kemisten.Mixfile do
   def project do
     [ app: :kemisten,
       version: "0.1.1",
-      elixir: "~> 1.4",
+      elixir: "~> 1.6",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
       aliases: aliases(),
@@ -26,7 +26,7 @@ defmodule Kemisten.Mixfile do
     # Specify extra applications you'll use from Erlang/Elixir
     [ mod: { Kemisten.Application, [] },
       extra_applications: [
-        :logger, :slack
+        :logger
       ]
     ]
   end
@@ -43,9 +43,10 @@ defmodule Kemisten.Mixfile do
   defp deps do
     [
       # { :websocket_client, git: "https://github.com/simpers/websocket_client.git", tag: "1.1.0", override: true },
-      { :slack, "~> 0.14" },
-      { :distillery, "~> 1.5.3" },
-      { :edeliver, "~> 1.5" },
+      { :slack, "~> 0.15" },
+
+      # Tools
+      { :distillery, "~> 2.0" },
       { :excoveralls, "~> 0.8", only: :test }
     ]
   end

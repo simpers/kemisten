@@ -28,4 +28,7 @@ use Mix.Config
 # here (which is why it is important to import them last).
 #
 
+config :kemisten,
+  slack_token_env_name: { :env, "SLACK_TOKEN" }
+
 import_config "#{Mix.env}.exs"
