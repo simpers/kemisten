@@ -24,8 +24,11 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          envFrom:
-          - configMapRef:
-              name: {{ .Release.Name }}-configmap
+          env:
+          - name: "SLACK_TOKEN"
+            valueFrom:
+              secretRef:
+                name: {{ .Values.slack.secret.name }}
+                key: {{ .Values.slack.secret.key }}
           resources:
 {{ toYaml .Values.resources | indent 12 }}

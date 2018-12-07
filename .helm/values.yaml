@@ -10,7 +10,9 @@ image:
   pullPolicy: Always
 
 slack:
-  apiKey: "REPLACE ME"
+  secret:
+    name: "REPLACE ME"
+    key: "REPALCE ME"
   
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
