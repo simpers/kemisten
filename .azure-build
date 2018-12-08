@@ -6,6 +6,10 @@ REPO="menuan.azurecr.io"
 APP_NAME="kemisten"
 MIX_ENVIRONMENT="prod"
 
+
+echo '[mix] fetching dependencies and compiling'
+mix do deps.get, compile >> /dev/null
+
 APP_VERSION=$(mix version | tail -1)
 COMMIT_ID="$(git rev-parse --short HEAD)"
 TAG="${APP_VERSION}-${COMMIT_ID}"
@@ -17,7 +21,7 @@ TAG_LATEST="${REPO}${TAG_LATEST}"
 NEED_TO_BUILD=$(docker image ls ${TAG_FULL} | wc -l | tr -d '[:space:]')
 
 if [ $NEED_TO_BUILD == "1" ]; then
-  mix do deps.get, compile >> /dev/null
+  echo '[mix] running tests'
   mix test
 
   docker build --build-arg MIX_ENV=${MIX_ENVIRONMENT} -t $TAG_FULL .

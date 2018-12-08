@@ -28,7 +28,7 @@ defmodule Kemisten.Parser do
   end
   def parse_message(_message = %{ text: "version", channel: channel }, slack, state) do
     version = Kemisten.version
-    Utils.send_message("I'm at version '#{version}'", channel)
+    Utils.send_message("I'm at version '#{version}', thanks for asking :)", channel)
     { :ok, state }
   end
   def parse_message(_message = %{ text: text, channel: channel }, _slack, state) do
