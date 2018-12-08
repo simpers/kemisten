@@ -22,8 +22,8 @@ pr:
   
 variables:
   AZURE_SUBSCRIPTION: 'menuan (c61ac7e7-acd8-4a30-a5c3-d3efedc06f90)'
-  AZURE_RESOURCE_GROUP: ''
-  KUBERNETES_CLUSTER: ''
+  AZURE_RESOURCE_GROUP: 'menuan-aks-rg'
+  KUBERNETES_CLUSTER: 'menuan-aks'
   IMAGE_TAG: ''
 
 - job: 'cicd'
