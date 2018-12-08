@@ -9,41 +9,51 @@ pool:
   - docker
   - elixir-mix
 
+trigger:
+  batch: true
+  branches:
+    include:
+    - master
+
+pr:
+  branches:
+    include:
+    - master
+  
 variables:
   AZURE_SUBSCRIPTION: 'menuan (c61ac7e7-acd8-4a30-a5c3-d3efedc06f90)'
   AZURE_RESOURCE_GROUP: ''
   KUBERNETES_CLUSTER: ''
   IMAGE_TAG: ''
-  
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
-
-# - bash
-  
-- task: Docker@1
-  displayName: 'Push image and its tags'
-  inputs:
-    azureSubscriptionEndpoint: '$(AZURE_SUBSCRIPTION)'
-    azureContainerRegistry: menuan.azurecr.io
-    command: 'Push an image'
-    pushMultipleImages: true
-    imageNamesPath: .docker/images.txt
-
-- task: HelmDeploy@0
-  displayName: 'Upgrade deployment'
-  inputs:
-    azureSubscription: '$(AZURE_SUBSCRIPTION)'
-    azureResourceGroup: '$(AZURE_RESOURCE_GROUP)'
-    kubernetesCluster: '$(KUBERNETES_CLUSTER)'
-    namespace: 'slack'
-    command: upgrade
-    chartType: FilePath
-    chartPath: '.helm'
-    releaseName: 'kemisten'
-    overrideValues: 'image.tag=$(IMAGE_TAG),slack.secret.name=kemisten-token,slack.secret.key=token'
+- job: 'cicd'
+  displayName: 'Test && deploy'
+  continueOnError: false
+  timeoutInMinutes: 30
+  steps:
+  - displayName: 'Get dependencies, compile and run tests'
+    script: |
+      mix do deps.get, compile
+      MIX_ENV=test mix compile
+      mix test
+  - task: Docker@1
+    displayName: 'Push image and its tags'
+    inputs:
+      azureSubscriptionEndpoint: '$(AZURE_SUBSCRIPTION)'
+      azureContainerRegistry: menuan.azurecr.io
+      command: 'Push an image'
+      pushMultipleImages: true
+      imageNamesPath: .docker/images.txt
+  - task: HelmDeploy@0
+    displayName: 'Upgrade || Install'
+    inputs:
+      # connectionType: ''
+      azureSubscription: '$(AZURE_SUBSCRIPTION)'
+      azureResourceGroup: '$(AZURE_RESOURCE_GROUP)'
+      kubernetesCluster: '$(KUBERNETES_CLUSTER)'
+      namespace: 'slack'
+      command: upgrade
+      chartType: FilePath
+      chartPath: '.helm'
+      releaseName: 'kemisten'
+      overrideValues: 'image.tag=$(IMAGE_TAG),slack.secret.name=kemisten-token,slack.secret.key=token'

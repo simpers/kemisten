@@ -1,17 +1,20 @@
 defmodule Kemisten.Mixfile do
   use Mix.Project
 
+  @kemisten_version "0.1.12"
+  @kemisten_iex_version "~> 1.6"
+  
   def project do
     [ app: :kemisten,
-      version: "0.1.1",
-      elixir: "~> 1.6",
+      version: @kemisten_version,
+      elixir: @kemisten_iex_version,
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
       aliases: aliases(),
       deps: deps(),
       test_coverage: [ tool: ExCoveralls ],
       preferred_cli_env: [
-        "coveralls": :test,
+        coveralls: :test,
         "coveralls.detail": :test,
         "coveralls.post": :test,
         "coveralls.html": :test
@@ -31,18 +34,8 @@ defmodule Kemisten.Mixfile do
     ]
   end
 
-  # Dependencies can be Hex packages:
-  #
-  #   {:my_dep, "~> 0.3.0"}
-  #
-  # Or git/path repositories:
-  #
-  #   {:my_dep, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
-  #
-  # Type "mix help deps" for more examples and options
   defp deps do
     [
-      # { :websocket_client, git: "https://github.com/simpers/websocket_client.git", tag: "1.1.0", override: true },
       { :slack, "~> 0.15" },
 
       # Tools
@@ -51,5 +44,9 @@ defmodule Kemisten.Mixfile do
     ]
   end
 
-  defp aliases(), do: [ "test": [ "test --no-start" ] ]
+  defp aliases() do
+    [
+      test: [ "test --no-start" ]
+    ]
+  end
 end

@@ -3,10 +3,11 @@ defmodule Kemisten.Parser do
 
   alias Kemisten.{Pinger,Utils}
 
+  @module_tag "[Parser]"
   @unhandled_msg_string "Unhandled message received:\n"
 
   def parse_message(_message = %{ text: "ping", channel: channel }, slack, state) do
-    Logger.info "Got a ping, responding with pong."
+    Logger.info "#{@module_tag} Got a ping, responding with pong."
     Pinger.ping_response(channel, slack)
     { :ok, state }
   end
@@ -25,6 +26,11 @@ defmodule Kemisten.Parser do
     Utils.print_state(slack, key)
     { :ok, state }
   end
+  def parse_message(_message = %{ text: "version", channel: channel }, slack, state) do
+    version = Kemisten.version
+    Utils.send_message("I'm at version '#{version}'", channel)
+    { :ok, state }
+  end
   def parse_message(_message = %{ text: text, channel: channel }, _slack, state) do
     Logger.debug @unhandled_msg_string <> text
     Utils.send_message(@unhandled_msg_string <> text, channel)
@@ -32,12 +38,12 @@ defmodule Kemisten.Parser do
   end
 
   defp if_target_me(true, { _target, from, channel, _slack }, state) do
-    Logger.info "Cheeky person #{from} tried to make me ping myself!"
+    Logger.info "#{@module_tag} The cheeky #{from} tried to make me ping myself!"
     Utils.send_message("No can do, Sir", channel)
     { :ok, state }
   end
   defp if_target_me(false, { target, _from, channel, slack }, state) do
-    Logger.info "Starting pinger: #{target}"
+    Logger.info "#{@module_tag} Starting pinger with #{target}"
     Pinger.setup_pinger(target, state, channel, slack)
   end
 end

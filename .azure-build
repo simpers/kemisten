@@ -1,0 +1,34 @@
+#!/bin/bash
+
+set -e
+
+REPO="menuan.azurecr.io"
+APP_NAME="kemisten"
+MIX_ENVIRONMENT="prod"
+
+APP_VERSION=$(mix version | tail -1)
+COMMIT_ID="$(git rev-parse --short HEAD)"
+TAG="${APP_VERSION}-${COMMIT_ID}"
+TAG_FULL_SUFFIX="/${APP_NAME}:${TAG}"
+TAG_LATEST="/${APP_NAME}:latest"
+TAG_FULL="${REPO}${TAG_FULL_SUFFIX}"
+TAG_LATEST="${REPO}${TAG_LATEST}"
+
+NEED_TO_BUILD=$(docker image ls ${TAG_FULL} | wc -l | tr -d '[:space:]')
+
+if [ $NEED_TO_BUILD == "1" ]; then
+  mix do deps.get, compile >> /dev/null
+  mix test
+
+  docker build --build-arg MIX_ENV=${MIX_ENVIRONMENT} -t $TAG_FULL .
+  docker tag $TAG_FULL $TAG_LATEST
+else
+  echo "Commit ${COMMIT_ID} has already been built"
+fi
+
+mkdir -p .docker
+
+echo ${TAG_FULL} > .docker/images.txt
+echo ${TAG_LATEST} >> .docker/images.txt
+
+echo "##vso[task.setvariable variable=IMAGE_TAG]${TAG}"
