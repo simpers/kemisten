@@ -12,7 +12,7 @@ image:
 slack:
   secret:
     name: "REPLACE ME"
-    key: "REPALCE ME"
+    key: "REPLACE ME"
   
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
