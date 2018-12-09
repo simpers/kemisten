@@ -15,10 +15,10 @@ defmodule Kemisten.Pinger do
     { :ok, state }
   end
   def setup_pinger(target, state, origin_channel, slack) do
-    case Utils.channel_or_user_exists(slack, target) do
+    case Utils.does_channel_or_user_exist?(target, slack) do
       true ->
-        { :ok, timer_ref } = :timer.apply_interval(5000, __MODULE__, :ping_channel, [target, self()])
-        { :ok, Kernel.put_in(state, [:pinging, target], timer_ref) }
+        { :ok, timer_ref } = :timer.apply_interval(5000, __MODULE__, :ping_channel, [ target, self() ])
+        { :ok, Kernel.put_in(state, [ :pinging, target ], timer_ref) }
       false ->
         msg = "Target #{target} does not exist or is invalid."
         Logger.error "#{@module_tag} #{msg}"

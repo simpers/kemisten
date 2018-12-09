@@ -6,13 +6,16 @@ defmodule Kemisten.Slack.Handler do
   
   @module_tag "[Handler]"
 
-  def handle_connect(slack, state) do
+  def handle_connect(slack, state) when is_map(state) do
     Logger.info "#{@module_tag} Connected as #{slack.me.name}"
     new_state = state
     |> Map.put(:pinging, %{ })
     |> Map.put(:ignoring, %{ })
     |> Map.put(:focus, nil)
     { :ok, new_state }
+  end
+  def handle_connect(_slack, nonmap_state) do
+    { :error, :invalid_argument, { :invalid_init_state, nonmap_state } }
   end
 
   def handle_event(message = %{ type: "message", sub_type: "bot_message" }, _slack, state) do
@@ -28,14 +31,11 @@ defmodule Kemisten.Slack.Handler do
     Logger.error "#{@module_tag} Error: #{Kernel.inspect(error)}"
     { :ok, state }
   end
-  def handle_event(event = %{ type: "member_joined_channel", channel: channel, user: user }, slack, state) do
-    event_string = Kernel.inspect(event)
+  def handle_event(_event = %{ type: "member_joined_channel", channel: channel, user: user }, slack, state) do
     Utils.send_message("Welcome to #{Utils.format_mention_channel(channel, slack)}, #{Utils.format_mention(user)}", channel)
     { :ok, state }
   end
-  def handle_event(event = %{ type: "member_left_channel" }, _slack, state) do
-    event_string = Kernel.inspect(event)
-    Logger.debug "#{@module_tag} Member left channel event:\n#{event_string}"
+  def handle_event(_event = %{ type: "member_left_channel" }, _slack, state) do
     { :ok, state }
   end
   def handle_event(%{ type: event_type }, _, state) do

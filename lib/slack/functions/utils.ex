@@ -1,12 +1,30 @@
 defmodule Kemisten.Utils do
+
+  def get_my_id(nil),
+    do: nil
   def get_my_id(slack),
-    do: slack.me.id
+    do: get_my_id_p(slack.me)
 
-  def get_users_name(user_id, slack) when is_binary(user_id),
-    do: slack.users[user_id].name
+  defp get_my_id_p(nil),
+    do: nil
+  defp get_my_id_p(me),
+    do: me.id
 
-  def get_users_real_name(user_id, slack) when is_binary(user_id),
-    do: slack.users[user_id].profile.real_name
+  # get_users_name/2
+  def get_users_name(_user_id, nil), do: nil
+  def get_users_name(user_id, slack) when is_binary(user_id) do
+    { result, _ } = Kernel.pop_in(slack, [ :users, user_id, :name ])
+    result
+  end
+    
+  # get_users_real_name/2
+  def get_users_real_name(_user_id, nil), do: nil
+  def get_users_real_name(user_id, slack) when is_binary(user_id) do
+    { result, _ } = Kernel.pop_in(slack, [ :users, user_id, :profile, :real_name ])
+    result
+  end
+
+  # slack.users[user_id].profile.real_name
 
   def get_channel_name(channel_id, slack) when is_binary(channel_id) do
     slack.channels[channel_id].name
@@ -39,14 +57,15 @@ defmodule Kemisten.Utils do
     do: "<@#{id}|#{get_users_real_name(id, slack)}>"
   def format_mention(_id, _invalid_option, _slack),
     do: nil
-    
-  # check_if_im_channel_with_user/3
-  def check_if_im_channel_with_user(slack, channel, user_id) do
-    slack[:ims][channel][:user] == user_id
+
+  # does_channel_or_user_exists?/2
+  def does_channel_or_user_exist?(channel, slack) do
+    does_channel_or_user_exist_p([ :channels, channel ], slack) != nil or does_channel_or_user_exist_p([ :users, channel ], slack) != nil
   end
 
-  def channel_or_user_exists(slack, channel) do
-    slack.channels[channel] != nil or slack.users[channel] != nil
+  defp does_channel_or_user_exist_p(list, slack) do
+    { result, _ } = Kernel.pop_in(slack, list)
+    result
   end
 
   #
