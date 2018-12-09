@@ -7,15 +7,18 @@ defmodule Kemisten.Parser do
   @unhandled_msg_string "Unhandled message received:\n"
 
   def handle_focus_and_ignored(message = %{ user: user }, state, slack) do
-    if Utils.is_focusing?(state.focus) do
-      handle_focus(Utils.is_focusing_user?(user, state.focus), message, slack, state)
-    else
-      handle_ignored(Ignorer.is_ignoring_user?(user, state.ignoring), message, slack, state)
+    cond do
+      Utils.is_focusing?(state.focus) ->
+        handle_focus(Utils.is_focusing_user?(user, state.focus), message, slack, state)
+      true ->
+        handle_ignored(Ignorer.is_ignoring_user?(user, state.ignoring), message, slack, state)
     end
   end
 
-  defp handle_focus(false, _message, _slack, state),
-    do: { :ok, state }
+  defp handle_focus(false, _message = %{ user: user }, slack, state) do
+    Logger.debug "#{@module_tag} Not focused on user #{Utils.get_users_name(user, slack)}"
+    { :ok, state }
+  end
   defp handle_focus(true, message, slack, state),
     do: parse_message(message, slack, state)
 
@@ -77,14 +80,18 @@ defmodule Kemisten.Parser do
       { :ok, Ignorer.ignore_user(target_id, state) }
     end
   end
-  def parse_message(_message = %{ text: text, channel: channel }, _slack, state) do
-    if Utils.is_user_joined_or_left_message?(text) do
-      Logger.debug "#{@module_tag} "
-      { :ok, state }
-    else
-      Logger.debug @unhandled_msg_string <> text
-      Utils.send_message(@unhandled_msg_string <> text, channel)
-      { :ok, state }
+  def parse_message(message = %{ text: text, user: user, channel: channel }, slack, state) do
+    cond do
+      Utils.is_user_joined_or_left_message?(text) ->
+        Logger.debug "#{@module_tag} Ignoring joined/left message"
+        { :ok, state }
+      Utils.get_my_id(slack) == user ->
+        Logger.debug "#{@module_tag} Ignoring a message from myself/other deployment of kemisten"
+        { :ok, state }
+      true ->
+        Logger.debug "#{@module_tag} #{@unhandled_msg_string}:\n#{Kernel.inspect(message)}"
+        Utils.send_message(@unhandled_msg_string <> text, channel)
+        { :ok, state }
     end
   end
 

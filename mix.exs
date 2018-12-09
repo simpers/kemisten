@@ -1,7 +1,7 @@
 defmodule Kemisten.Mixfile do
   use Mix.Project
 
-  @kemisten_version "0.2.2"
+  @kemisten_version "0.2.3"
   @kemisten_iex_version "~> 1.6"
   
   def project do
