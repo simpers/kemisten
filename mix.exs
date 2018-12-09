@@ -1,7 +1,7 @@
 defmodule Kemisten.Mixfile do
   use Mix.Project
 
-  @kemisten_version "0.2.1"
+  @kemisten_version "0.2.2"
   @kemisten_iex_version "~> 1.6"
   
   def project do
@@ -29,7 +29,7 @@ defmodule Kemisten.Mixfile do
     # Specify extra applications you'll use from Erlang/Elixir
     [ mod: { Kemisten.Application, [] },
       extra_applications: [
-        :logger
+        :logger, :timex
       ]
     ]
   end
@@ -37,6 +37,7 @@ defmodule Kemisten.Mixfile do
   defp deps do
     [
       { :slack, "~> 0.15" },
+      { :timex, "~> 3.4" },
 
       # Tools
       { :distillery, "~> 2.0" },

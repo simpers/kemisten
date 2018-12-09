@@ -5,10 +5,10 @@ defmodule Kemisten.Pinger do
 
   @module_tag "[Pinger]"
 
-  def ping_response(channel, slack),
+  def ping_response(channel, _slack),
     do: Utils.send_message("pong", channel)
 
-  def setup_pinger(nil, state, origin_channel, slack) do
+  def setup_pinger(nil, state, origin_channel, _slack) do
     msg = "Target is nil"
     Logger.error "[Pinger] #{msg}"
     Utils.send_message(msg, origin_channel)
@@ -39,7 +39,7 @@ defmodule Kemisten.Pinger do
     end
   end
 
-  def pong_response(channel, state, slack) do
+  def pong_response(channel, state, _slack) do
     case Kernel.pop_in(state[:pinging][channel]) do
       { nil, state } ->
         Logger.debug "#{@module_tag} Was not pinging user #{channel}."
