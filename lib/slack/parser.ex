@@ -37,6 +37,15 @@ defmodule Kemisten.Parser do
     Pinger.ping_response(channel, slack)
     { :ok, state }
   end
+  def parse_message(_message = %{ text: "ping -i " <> time_and_user, user: from, channel: channel }, slack, state) do
+    case Utils.extract_interval_and_user_id(time_and_user) do
+      { { :error, reason }, _target } ->
+        Utils.send_message("Time specified is outside allowed interval (0 < n < 31 seconds)", channel)
+        { :ok, state }
+      { interval, target } ->
+        if_target_me(Utils.get_my_id(slack) == target, { target, from, channel, slack, interval * 1000 }, state)
+    end
+  end  
   def parse_message(_message = %{ text: "ping " <> user, user: from, channel: channel }, slack, state) do
     target = Utils.extract_user_id(user)
     if_target_me(Utils.get_my_id(slack) == target, { target, from, channel, slack }, state)
@@ -104,4 +113,13 @@ defmodule Kemisten.Parser do
     Logger.info "#{@module_tag} Starting pinger with #{target}"
     Pinger.setup_pinger(target, state, channel, slack)
   end
+  defp if_target_me(true, { _target, from, channel, _slack, _interval }, state) do
+    Logger.info "#{@module_tag} The cheeky #{from} tried to make me ping myself!"
+    Utils.send_message("No can do, Sir", channel)
+    { :ok, state }
+  end  
+  defp if_target_me(false, { target, _from, channel, slack, interval }, state) do
+    Logger.info "#{@module_tag} Starting pinger with #{target} with interval #{interval}"
+    Pinger.setup_pinger(target, state, channel, slack, interval)
+  end  
 end

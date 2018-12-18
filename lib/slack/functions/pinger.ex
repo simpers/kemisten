@@ -8,16 +8,22 @@ defmodule Kemisten.Pinger do
   def ping_response(channel, _slack),
     do: Utils.send_message("pong", channel)
 
-  def setup_pinger(nil, state, origin_channel, _slack) do
+  # setup_pinger/4
+  def setup_pinger(target, state, origin_channel, slack) do
+    setup_pinger(target, state, origin_channel, slack, 5000)
+  end
+
+  # setup_pinger/5
+  def setup_pinger(nil, state, origin_channel, _slack, _interval) do
     msg = "Target is nil"
-    Logger.error "[Pinger] #{msg}"
+    Logger.error "#{@module_tag} #{msg}"
     Utils.send_message(msg, origin_channel)
     { :ok, state }
-  end
-  def setup_pinger(target, state, origin_channel, slack) do
+  end  
+  def setup_pinger(target, state, origin_channel, slack, interval) do
     case Utils.does_channel_or_user_exist?(target, slack) do
       true ->
-        { :ok, timer_ref } = :timer.apply_interval(5000, __MODULE__, :ping_channel, [ target, self() ])
+        { :ok, timer_ref } = :timer.apply_interval(interval, __MODULE__, :ping_channel, [ target, self() ])
         { :ok, Kernel.put_in(state, [ :pinging, target ], timer_ref) }
       false ->
         msg = "Target #{target} does not exist or is invalid."
@@ -25,7 +31,7 @@ defmodule Kemisten.Pinger do
         Utils.send_message(msg, origin_channel)
         { :ok, state }
     end
-  end
+  end  
 
   def stop_pinger(channel, state) do
     case Kernel.pop_in(state[:pinging][channel]) do
