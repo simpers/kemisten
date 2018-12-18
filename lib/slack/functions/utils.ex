@@ -1,5 +1,7 @@
 defmodule Kemisten.Utils do
 
+  require Logger
+
   def get_my_id(nil),
     do: nil
   def get_my_id(slack),
@@ -44,6 +46,19 @@ defmodule Kemisten.Utils do
     Regex.named_captures(regex, binary)["id"]
   end
 
+  def extract_interval_and_user_id(binary) when is_binary(binary) do
+    { interval, " " <> hopefully_username } = Integer.parse(binary)
+    Logger.debug "#{@module_tag} Got - {#{interval}, \"#{hopefully_username}\"}"
+    { validate_interval(interval), extract_user_id(hopefully_username) }
+  end
+
+  defp validate_interval(1),
+    do: 1
+  defp validate_interval(n) when 0 < n and n < 31,
+    do: n
+  defp validate_interval(n),
+    do: { :error, :invalid_interval }
+  
   # format_mention/1
   def format_mention(binary) when is_binary(binary),
     do: "<@#{binary}>"
