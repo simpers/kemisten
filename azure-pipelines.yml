@@ -21,6 +21,16 @@ pr:
     - master
   
 variables:
+  TEST_DB_CON_NAME: 'test-postgresql'
+  AZURE_SUBSCRIPTION_DEV: 'menuan-aks-arm'
+  AZURE_IMG_REG: 'menuan.azurecr.io'
+  AZURE_RESOURCE_GROUP_DEV: 'menuan-aks-rg'
+  KUBERNETES_CLUSTER_DEV: 'menuan-aks'
+  HELM_CACERT: '99848992-29aa-4b92-90c8-87f3533ac06d'
+  HELM_CERT: '4012129c-7488-4cd6-bcf7-0b5c16fe293b'
+  HELM_KEY: '10d7af45-56d5-46d2-91ee-f697c74aa362'
+
+variables:
   AZURE_SUBSCRIPTION: 'menuan (c61ac7e7-acd8-4a30-a5c3-d3efedc06f90)'
   AZURE_RESOURCE_GROUP: 'menuan-aks-rg'
   KUBERNETES_CLUSTER: 'menuan-aks'
@@ -48,9 +58,9 @@ variables:
     displayName: 'Upgrade || Install'
     inputs:
       # connectionType: ''
-      azureSubscription: '$(AZURE_SUBSCRIPTION)'
+      azureSubscription: '$(AZURE_SUBSCRIPTION_DEV)'
       azureResourceGroup: '$(AZURE_RESOURCE_GROUP)'
-      kubernetesCluster: '$(KUBERNETES_CLUSTER)'
+      kubernetesCluster: '$(KUBERNETES_CLUSTER_DEV)'
       namespace: 'slack'
       command: upgrade
       chartType: FilePath

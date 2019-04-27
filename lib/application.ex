@@ -11,7 +11,7 @@ defmodule Kemisten.Application do
         :error
       { :env, token_name } ->
         token = System.get_env(token_name)
-        slack_args = [ Kemisten.Slack.Handler, %{}, token ]
+        slack_args = [ Kemisten.Slack.Handler, %{}, token, %{ client: Kemisten.Client } ]
         children = [
           supervisor(Kemisten.OTP.SlackSupervisor, [ slack_args ])
         ]

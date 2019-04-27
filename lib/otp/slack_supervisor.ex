@@ -7,9 +7,9 @@ defmodule Kemisten.OTP.SlackSupervisor do
     Supervisor.start_link(__MODULE__, opts, name: __MODULE__)
   end
 
-  def init(opts) do
+  def init(slack_bot_args) do
     children = [
-      worker(Slack.Bot, opts, restart: :transient)
+      worker(Slack.Bot, slack_bot_args, restart: :transient)
     ]
     supervise(children, strategy: :one_for_one)
   end

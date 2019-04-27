@@ -42,9 +42,13 @@ defmodule Kemisten.Mixfile do
   
   defp deps do
     [
-      { :slack, "~> 0.15" },
+      # { :slack, "~> 0.16" },
+      # { :slack, github: "simpers/Elixir-Slack", commit: "d745fbbfbb09eb34875afbc67575bb5d1f6799c3" },
+      { :slack, path: "../Elixir-Slack" },
+      { :websockex, "~> 0.4.0" },
       { :timex, "~> 3.4" },
-
+      { :jason, github: "simpers/jason", commit: "85f3d2e200e76c21e7a5c0e45324c2d4a41313fe", override: true }, 
+      
       # Tools
       { :distillery, "~> 2.0" },
       { :excoveralls, "~> 0.10", only: :test }
